@@ -1,5 +1,5 @@
 package loipt.example.thymeleaf.controller;
-import loipt.example.thymeleaf.model.Product;
+import loipt.example.thymeleaf.entity.Product;
 import loipt.example.thymeleaf.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

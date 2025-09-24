@@ -1,6 +1,6 @@
 package loipt.example.thymeleaf.service;
 
-import loipt.example.thymeleaf.model.Product;
+import loipt.example.thymeleaf.entity.Product;
 import java.util.List;
 
 public interface IProductService {

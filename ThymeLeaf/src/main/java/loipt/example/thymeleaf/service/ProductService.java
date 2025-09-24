@@ -1,57 +1,60 @@
 package loipt.example.thymeleaf.service;
 
-import loipt.example.thymeleaf.model.Product;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import loipt.example.thymeleaf.entity.Product;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductService implements IProductService {
-    private static final List<Product> products = new ArrayList<>();
 
-    static {
-        products.add(new Product(1L, "Laptop Dell", 1500, "Laptop văn phòng", "Dell"));
-        products.add(new Product(2L, "iPhone 15", 1200, "Điện thoại cao cấp", "Apple"));
-        products.add(new Product(3L, "Samsung TV", 800, "TV 4K UHD", "Samsung"));
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Product> findAll() {
-        return products;
+        return entityManager.createQuery("SELECT p FROM Product p", Product.class).getResultList();
     }
 
     @Override
     public Product findById(Long id) {
-        return products.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
+        return entityManager.find(Product.class, id);
     }
 
     @Override
     public void save(Product product) {
-        product.setId((long) (products.size() + 1));
-        products.add(product);
+        entityManager.persist(product);
     }
 
     @Override
     public void update(Long id, Product product) {
-        Product existing = findById(id);
+        Product existing = entityManager.find(Product.class, id);
         if (existing != null) {
             existing.setName(product.getName());
             existing.setPrice(product.getPrice());
             existing.setDescription(product.getDescription());
             existing.setManufacturer(product.getManufacturer());
+            entityManager.merge(existing);
         }
     }
 
     @Override
     public void delete(Long id) {
-        products.removeIf(p -> p.getId().equals(id));
+        Product existing = entityManager.find(Product.class, id);
+        if (existing != null) {
+            entityManager.remove(existing);
+        }
     }
 
     @Override
     public List<Product> searchByName(String keyword) {
-        return products.stream()
-                .filter(p -> p.getName().toLowerCase().contains(keyword.toLowerCase()))
-                .toList();
+        return entityManager.createQuery(
+                        "SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(:kw)", Product.class)
+                .setParameter("kw", "%" + keyword + "%")
+                .getResultList();
     }
 }
