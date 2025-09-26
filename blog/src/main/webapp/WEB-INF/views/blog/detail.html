@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${blog.title}">Blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+<body class="container py-4">
+  <div class="mb-3">
+    <a class="btn btn-link" th:href="@{/blogs}">&larr; Back</a>
+  </div>
+  <h1 th:text="${blog.title}">Title</h1>
+  <p class="text-muted" th:text="${#temporals.format(blog.createdAt, 'yyyy-MM-dd HH:mm')}">time</p>
+  <p class="lead" th:text="${blog.summary}">Summary</p>
+  <hr />
+  <div th:utext="${#strings.replace(blog.content, '\n', '<br/>')}"></div>
+
+  <div class="mt-4 d-flex gap-2">
+    <a class="btn btn-warning" th:href="@{/blogs/{id}/edit(id=${blog.id})}">Edit</a>
+    <form th:action="@{/blogs/{id}/delete(id=${blog.id})}" method="post">
+      <button class="btn btn-danger" type="submit" onclick="return confirm('Delete this blog?')">Delete</button>
+    </form>
+  </div>
+</body>
+</html>
+
+
