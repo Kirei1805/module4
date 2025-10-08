@@ -1,4 +1,9 @@
 package example.formvalidation.service;
 
-public class UserService {
+import example.formvalidation.model.User;
+import java.util.List;
+
+public interface UserService {
+    void save(User user);
+    List<User> findAll();
 }
