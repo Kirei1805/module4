@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Blogs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <style>
+        .summary { color: #555; }
+        .category-badge { font-size: 0.75rem; }
+    </style>
+</head>
+<body class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Blogs <span th:if="${currentCategory}" class="text-muted">- <span th:text="${currentCategory.name}"></span></span></h1>
+        <div>
+            <a class="btn btn-primary me-2" th:href="@{/blogs/new}">New Blog</a>
+            <a class="btn btn-outline-info" th:href="@{/categories}">Categories</a>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" th:action="@{/blogs}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Search by title:</label>
+                        <input type="text" class="form-control" name="searchName" th:value="${searchName}" placeholder="Enter title...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Category:</label>
+                        <select class="form-select" name="categoryId">
+                            <option value="">All Categories</option>
+                            <option th:each="cat : ${categories}" 
+                                    th:value="${cat.id}" 
+                                    th:text="${cat.name}"
+                                    th:selected="${categoryId != null && categoryId == cat.id}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Sort by:</label>
+                        <select class="form-select" name="sortBy">
+                            <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Date</option>
+                            <option value="title" th:selected="${sortBy == 'title'}">Title</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Order:</label>
+                        <select class="form-select" name="sortDir">
+                            <option value="desc" th:selected="${sortDir == 'desc'}">Newest First</option>
+                            <option value="asc" th:selected="${sortDir == 'asc'}">Oldest First</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary d-block w-100">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${blogPage.content.isEmpty()}" class="alert alert-info">No blogs found.</div>
+
+    <div class="list-group" th:unless="${blogPage.content.isEmpty()}">
+        <a class="list-group-item list-group-item-action" th:each="b : ${blogPage.content}" th:href="@{/blogs/detail/{id}(id=${b.id})}">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1" th:text="${b.title}">Title</h5>
+                <small th:text="${#temporals.format(b.createdAt, 'yyyy-MM-dd HH:mm')}">time</small>
+            </div>
+            <p class="mb-1 summary" th:text="${b.summary}">Summary</p>
+            <div class="mt-2">
+                <span th:if="${b.category != null}" class="badge bg-secondary category-badge" th:text="${b.category.name}">Category</span>
+                <span th:unless="${b.category != null}" class="badge bg-light text-dark category-badge">No Category</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${blogPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${blogPage.number == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/blogs(page=${blogPage.number - 1}, searchName=${searchName})}">Previous</a>
+                </li>
+                
+                <li th:each="pageNum : ${#numbers.sequence(0, blogPage.totalPages - 1)}" 
+                    class="page-item" 
+                    th:classappend="${pageNum == blogPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/blogs(page=${pageNum}, searchName=${searchName})}" 
+                       th:text="${pageNum + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${blogPage.number == blogPage.totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/blogs(page=${blogPage.number + 1}, searchName=${searchName})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Page Info -->
+    <div class="text-center mt-3">
+        <small class="text-muted">
+            Showing <span th:text="${blogPage.numberOfElements}">0</span> of <span th:text="${blogPage.totalElements}">0</span> posts
+            (Page <span th:text="${blogPage.number + 1}">1</span> of <span th:text="${blogPage.totalPages}">1</span>)
+        </small>
+    </div>
+</body>
+</html>
+
+
