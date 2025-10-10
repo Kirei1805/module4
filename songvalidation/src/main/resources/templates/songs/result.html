@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Kết quả</title>
+</head>
+<body>
+<h2>Bài hát đã được lưu thành công!</h2>
+<p><strong>Tên bài hát:</strong> <span th:text="${song.name}"></span></p>
+<p><strong>Nghệ sĩ:</strong> <span th:text="${song.artist}"></span></p>
+<p><strong>Thể loại:</strong> <span th:text="${song.genre}"></span></p>
+
+<a href="/">Thêm bài hát khác</a>
+</body>
+</html>
