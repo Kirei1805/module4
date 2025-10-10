@@ -1,44 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Register User</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <title>Register Form</title>
+    <meta charset="UTF-8">
 </head>
-<body class="container mt-5">
-<h2>User Registration</h2>
-<form th:action="@{/register}" th:object="${user}" method="post" class="mt-4">
+<body>
+<h2>Register Form</h2>
+<form th:action="@{/register}" th:object="${userDTO}" method="post">
 
-    <div class="mb-3">
-        <label>First Name</label>
-        <input type="text" th:field="*{firstName}" class="form-control">
-        <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></p>
-    </div>
+    <p>Firstname: <input type="text" th:field="*{firstname}"/></p>
+    <p th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" style="color:red"></p>
 
-    <div class="mb-3">
-        <label>Last Name</label>
-        <input type="text" th:field="*{lastName}" class="form-control">
-        <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></p>
-    </div>
+    <p>Lastname: <input type="text" th:field="*{lastname}"/></p>
+    <p th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" style="color:red"></p>
 
-    <div class="mb-3">
-        <label>Phone Number</label>
-        <input type="text" th:field="*{phoneNumber}" class="form-control">
-        <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></p>
-    </div>
+    <p>Email: <input type="text" th:field="*{email}"/></p>
+    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></p>
 
-    <div class="mb-3">
-        <label>Age</label>
-        <input type="number" th:field="*{age}" class="form-control">
-        <p th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="text-danger"></p>
-    </div>
+    <p>Phone Number: <input type="text" th:field="*{phoneNumber}"/></p>
+    <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" style="color:red"></p>
 
-    <div class="mb-3">
-        <label>Email</label>
-        <input type="text" th:field="*{email}" class="form-control">
-        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></p>
-    </div>
+    <p>Age: <input type="number" th:field="*{age}"/></p>
+    <p th:if="${#fields.hasErrors('age')}" th:errors="*{age}" style="color:red"></p>
 
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit">Register</button>
 </form>
 </body>
 </html>

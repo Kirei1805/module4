@@ -1,17 +1,17 @@
 package example.formvalidation.controller;
 
-
+import example.formvalidation.dto.UserDTO;
 import example.formvalidation.model.User;
-import example.formvalidation.dto.UserDto;
 import example.formvalidation.service.UserService;
+import example.formvalidation.validation.UserValidator;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import example.formvalidation.validation.UserValidator;
 
 @Controller
 public class FormController {
@@ -19,34 +19,35 @@ public class FormController {
     @Autowired
     private UserService userService;
 
-    @InitBinder("user")
+    @Autowired
+    private UserValidator userValidator;
+
+    @InitBinder("userDTO")
     protected void initBinder(WebDataBinder binder) {
-        binder.addValidators(new UserValidator());
+        binder.addValidators(userValidator);
     }
 
     @GetMapping("/")
     public String showForm(Model model) {
-        model.addAttribute("user", new UserDto());
+        model.addAttribute("userDTO", new UserDTO());
         return "index";
     }
 
     @PostMapping("/register")
-    public String submitForm(@Valid @ModelAttribute("user") UserDto userDto,
-                             BindingResult bindingResult,
-                             Model model) {
+    public String register(@Valid @ModelAttribute("userDTO") UserDTO userDTO,
+                           BindingResult bindingResult,
+                           Model model) {
+
         if (bindingResult.hasErrors()) {
             return "index";
         }
+
         User user = new User();
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setAge(userDto.getAge());
-        user.setEmail(userDto.getEmail());
+        BeanUtils.copyProperties(userDTO, user);
 
         userService.save(user);
+
         model.addAttribute("user", user);
         return "result";
     }
 }
-
