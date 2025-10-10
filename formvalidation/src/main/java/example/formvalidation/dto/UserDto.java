@@ -1,18 +1,13 @@
-package example.formvalidation.model;
+package example.formvalidation.dto;
 
-public class User {
+public class UserDto {
 
     private String firstName;
-
     private String lastName;
-
     private String phoneNumber;
-
     private int age;
-
     private String email;
 
-    // Getters và Setters
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
 
