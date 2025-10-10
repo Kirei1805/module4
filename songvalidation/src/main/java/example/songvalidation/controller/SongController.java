@@ -1,8 +1,8 @@
 package example.songvalidation.controller;
 
-import example.songvalidation.model.Song;
+import example.songvalidation.dto.SongDto;
 import example.songvalidation.service.SongService;
-import jakarta.validation.Valid;
+import example.songvalidation.validate.SongValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +15,9 @@ public class SongController {
 
     @Autowired
     private SongService songService;
+    
+    @Autowired
+    private SongValidate songValidate;
 
     @GetMapping
     public String list(Model model) {
@@ -24,12 +27,13 @@ public class SongController {
 
     @GetMapping("/new")
     public String showForm(Model model) {
-        model.addAttribute("song", new Song());
+        model.addAttribute("song", new SongDto());
         return "form";
     }
 
     @PostMapping("/save")
-    public String save(@Valid @ModelAttribute("song") Song song, BindingResult result) {
+    public String save(@ModelAttribute("song") SongDto song, BindingResult result) {
+        songValidate.validate(song, result);
         if (result.hasErrors()) {
             return "form";
         }
@@ -39,7 +43,7 @@ public class SongController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Song song = songService.findById(id);
+        SongDto song = songService.findById(id);
         if (song == null) {
             return "redirect:/songs";
         }
@@ -48,7 +52,8 @@ public class SongController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Long id, @Valid @ModelAttribute("song") Song song, BindingResult result) {
+    public String update(@PathVariable Long id, @ModelAttribute("song") SongDto song, BindingResult result) {
+        songValidate.validate(song, result);
         if (result.hasErrors()) {
             return "form";
         }
