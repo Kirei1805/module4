@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Giỏ hàng</title></head>
+<body>
+<h2>Giỏ hàng</h2>
+<table border="1">
+  <tr><th>Tên</th><th>Giá</th><th>Số lượng</th></tr>
+  <tr th:each="entry : ${cart.products}">
+    <td th:text="${entry.key.name}"></td>
+    <td th:text="${entry.key.price}"></td>
+    <td th:text="${entry.value}"></td>
+  </tr>
+</table>
+<h3>Tổng tiền: <span th:text="${cart.totalPrice()}"></span></h3>
+<a href="/products/shop">Tiếp tục mua sắm</a>
+</body>
+</html>
