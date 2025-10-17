@@ -1,0 +1,9 @@
+<div th:fragment="blogListFragment(posts)">
+    <ul>
+        <li th:each="post : ${posts}">
+            <h3 th:text="${post.title}"></h3>
+            <p th:text="${post.content}"></p>
+            <hr>
+        </li>
+    </ul>
+</div>

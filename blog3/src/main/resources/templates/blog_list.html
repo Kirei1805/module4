@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog AJAX</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<h1>Danh sách bài viết</h1>
+
+<form id="searchForm">
+    <input type="text" id="keyword" placeholder="Nhập từ khóa..." />
+    <button type="submit">Tìm kiếm</button>
+</form>
+
+<div id="blogList" th:replace="blog_list_ajax :: blogListFragment(${posts})"></div>
+
+<button id="loadMore">Tải thêm</button>
+
+<script src="/js/blog.js"></script>
+</body>
+</html>
