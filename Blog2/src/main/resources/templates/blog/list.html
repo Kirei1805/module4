@@ -51,12 +51,10 @@
         let currentSearchTerm = '';
         const pageSize = 20;
 
-        // Load initial blogs
         $(document).ready(function() {
             loadBlogs();
         });
 
-        // Search functionality
         $('#searchForm').on('submit', function(e) {
             e.preventDefault();
             currentSearchTerm = $('#searchInput').val().trim();
@@ -65,7 +63,6 @@
             loadBlogs();
         });
 
-        // Clear search
         $('#clearSearch').on('click', function() {
             $('#searchInput').val('');
             currentSearchTerm = '';
@@ -74,7 +71,6 @@
             loadBlogs();
         });
 
-        // Load more functionality
         $('#loadMoreBtn').on('click', function() {
             currentPage++;
             loadBlogs();
