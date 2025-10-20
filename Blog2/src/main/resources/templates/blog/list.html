@@ -1,26 +1,138 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Create Blog</title></head>
+<head>
+    <title>Blog List</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .search-form { margin-bottom: 20px; padding: 10px; background-color: #f5f5f5; }
+        .search-form input { padding: 8px; margin-right: 10px; width: 300px; }
+        .search-form button { padding: 8px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .search-form button:hover { background-color: #0056b3; }
+        .blog-item { border: 1px solid #ddd; margin-bottom: 15px; padding: 15px; background-color: white; }
+        .blog-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .blog-content { color: #666; margin-bottom: 10px; }
+        .blog-category { color: #007bff; font-size: 14px; }
+        .load-more-btn { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; margin-top: 20px; }
+        .load-more-btn:hover { background-color: #218838; }
+        .load-more-btn:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .no-results { text-align: center; color: #666; padding: 20px; }
+    </style>
+</head>
 <body>
-<h2>Create Blog</h2>
+    <h1>Blog List</h1>
+    
+    <!-- Search Form -->
+    <div class="search-form">
+        <form id="searchForm">
+            <input type="text" id="searchInput" placeholder="Search blogs by title or content..." />
+            <button type="submit">Search</button>
+            <button type="button" id="clearSearch">Clear</button>
+        </form>
+    </div>
 
-<form th:action="@{/blogs/save}" method="post" th:object="${blog}">
-  <label>Title:</label>
-  <input type="text" th:field="*{title}" required/><br><br>
+    <!-- Blog List Container -->
+    <div id="blogList">
+        <!-- Blog items will be loaded here -->
+    </div>
 
-  <label>Content:</label><br>
-  <textarea th:field="*{content}" rows="5" cols="40"></textarea><br><br>
+    <!-- Load More Button -->
+    <div style="text-align: center;">
+        <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+    </div>
 
-  <label>Category:</label>
-  <select th:field="*{category.id}">
-    <option th:each="c : ${categories}"
-            th:value="${c.id}"
-            th:text="${c.name}"></option>
-  </select><br><br>
+    <!-- Navigation Links -->
+    <div style="margin-top: 30px;">
+        <a th:href="@{/blogs/create}" style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">Create New Blog</a>
+    </div>
 
-  <button type="submit">Save</button>
-</form>
+    <script>
+        let currentPage = 0;
+        let currentSearchTerm = '';
+        const pageSize = 20;
 
-<a th:href="@{/blogs}">Back to list</a>
+        // Load initial blogs
+        $(document).ready(function() {
+            loadBlogs();
+        });
+
+        // Search functionality
+        $('#searchForm').on('submit', function(e) {
+            e.preventDefault();
+            currentSearchTerm = $('#searchInput').val().trim();
+            currentPage = 0;
+            $('#blogList').empty();
+            loadBlogs();
+        });
+
+        // Clear search
+        $('#clearSearch').on('click', function() {
+            $('#searchInput').val('');
+            currentSearchTerm = '';
+            currentPage = 0;
+            $('#blogList').empty();
+            loadBlogs();
+        });
+
+        // Load more functionality
+        $('#loadMoreBtn').on('click', function() {
+            currentPage++;
+            loadBlogs();
+        });
+
+        function loadBlogs() {
+            const url = currentSearchTerm ? 
+                `/v1/api/blogs/search?term=${encodeURIComponent(currentSearchTerm)}&page=${currentPage}&size=${pageSize}` :
+                `/v1/api/blogs/paginated?page=${currentPage}&size=${pageSize}`;
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    if (data.length === 0 && currentPage === 0) {
+                        $('#blogList').html('<div class="no-results">No blogs found.</div>');
+                        $('#loadMoreBtn').hide();
+                    } else if (data.length === 0) {
+                        $('#loadMoreBtn').hide();
+                    } else {
+                        displayBlogs(data);
+                        if (data.length < pageSize) {
+                            $('#loadMoreBtn').hide();
+                        } else {
+                            $('#loadMoreBtn').show();
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading blogs:', error);
+                    $('#blogList').html('<div class="no-results">Error loading blogs. Please try again.</div>');
+                }
+            });
+        }
+
+        function displayBlogs(blogs) {
+            blogs.forEach(function(blog) {
+                const blogHtml = `
+                    <div class="blog-item">
+                        <div class="blog-title">${escapeHtml(blog.title)}</div>
+                        <div class="blog-content">${escapeHtml(blog.content.substring(0, 200))}${blog.content.length > 200 ? '...' : ''}</div>
+                        <div class="blog-category">Category: ${escapeHtml(blog.categoryName || 'Uncategorized')}</div>
+                    </div>
+                `;
+                $('#blogList').append(blogHtml);
+            });
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+    </script>
 </body>
 </html>

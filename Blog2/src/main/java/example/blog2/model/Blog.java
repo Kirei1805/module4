@@ -24,6 +24,10 @@ public class Blog {
     }
 
     public Blog(Long id, String title, String content, Category category) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.category = category;
     }
 
     // Getters and setters

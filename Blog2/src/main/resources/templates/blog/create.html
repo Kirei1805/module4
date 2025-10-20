@@ -1,26 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{blog/layout :: layout (~{::body})}">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Blog</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 600px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
 <body>
-<h2>Thêm bài viết mới</h2>
+<h2>Create New Blog</h2>
 
-<form th:action="@{/blogs/add}" th:object="${blog}" method="post">
-  <label>Tiêu đề:</label>
-  <input type="text" th:field="*{title}" required><br>
+<form th:action="@{/blogs/save}" method="post" th:object="${blog}">
+  <label>Title:</label>
+  <input type="text" th:field="*{title}" required/><br><br>
 
-  <label>Nội dung:</label>
-  <textarea th:field="*{content}" rows="5" required></textarea><br>
+  <label>Content:</label><br>
+  <textarea th:field="*{content}" rows="5" cols="40"></textarea><br><br>
 
-  <label>Danh mục:</label>
-  <select th:field="*{category}" required>
-    <option th:each="cat : ${categories}"
-            th:value="${cat.id}"
-            th:text="${cat.name}"></option>
-  </select><br>
+  <label>Category:</label>
+  <select th:field="*{categoryId}">
+    <option th:each="c : ${categories}"
+            th:value="${c.id}"
+            th:text="${c.name}"></option>
+  </select><br><br>
 
-  <button type="submit">Lưu</button>
+  <button type="submit">Save</button>
 </form>
 
-<a th:href="@{/blogs}">← Quay lại</a>
+<a th:href="@{/blogs}">Back to list</a>
 </body>
 </html>
